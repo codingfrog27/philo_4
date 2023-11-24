@@ -42,8 +42,9 @@ typedef struct s_philo
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*philo_lock;
-	pthread_t		*thread_id;
+	pthread_t		thread_id;
 	t_data			*data;
+	bool			social_eating;
 }				t_philo;
 
 typedef enum e_msg_types
@@ -66,7 +67,7 @@ struct s_data
 	long			full_philos;
 	long			start_time;
 	pthread_mutex_t	*print_lock;
-	pthread_mutex_t	**forks;
+	pthread_mutex_t	*forks;
 	t_philo			**philo_arr;
 	bool			all_alive;
 };

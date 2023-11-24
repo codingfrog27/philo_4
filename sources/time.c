@@ -43,7 +43,7 @@ bool	philo_sleep(long sleep_time, t_philo *philo)
 	while ((timestamp() - start_time) < sleep_time)
 	{
 		usleep(nap_time);
-		if (i == 1)
+		if (i == 5)
 		{
 			if (!is_alive(philo, false, NULL))
 				return (false);

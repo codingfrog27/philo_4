@@ -46,7 +46,7 @@ void	start_simulation(t_data *data)
 	pthread_mutex_lock(data->print_lock);
 	while (i < data->nbr_of_philos)
 	{
-		if (pthread_create(data->philo_arr[i]->thread_id, NULL, philo_routine, \
+		if (pthread_create(&data->philo_arr[i]->thread_id, NULL, philo_routine, \
 		(void *)data->philo_arr[i]) != 0)
 		{
 			printf("ERROR: PTHREAD CREATE FAILURE\n");

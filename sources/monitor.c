@@ -38,35 +38,28 @@ bool	monitor_philos(t_data *data)
 
 bool	is_alive(t_philo *philo, bool in_monitor, int *full_philos)
 {
-	bool	alive;
+	bool	ret_val;
 
-	alive = true;
+	ret_val = true;
 	pthread_mutex_lock(philo->philo_lock);
 	if (time_since_x(philo->last_mealtime) > philo->data->time_till_death)
 	{
-		alive = false;
+		ret_val = false;
 		pthread_mutex_lock(philo->data->print_lock);
 		if (philo->data->all_alive)
 		{
 			printf("%li %i died\n", time_since_start(philo->data), \
 			philo->id);
 			philo->data->all_alive = false;
-			pthread_mutex_unlock(philo->data->print_lock);
 		}
+		pthread_mutex_unlock(philo->data->print_lock);
 	}
-	if (in_monitor)
+	else if (in_monitor)
 	{
 		if (philo->meals_eaten >= philo->data->meals_needed && \
 				philo->data->meals_needed != -1)
 			*full_philos = *full_philos + 1;
 	}
 	pthread_mutex_unlock(philo->philo_lock);
-	return (alive);
-}
-
-void	kill_everyone(t_data *data)
-{
-	pthread_mutex_lock(data->print_lock);
-	data->all_alive = false;
-	pthread_mutex_unlock(data->print_lock);
+	return (ret_val);
 }

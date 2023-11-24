@@ -83,16 +83,10 @@ bool	philo_init(t_data	*data)
 
 static bool	init_philo_members(t_data *data, t_philo **philos, int i)
 {
-	pthread_t		*thread;
-
-	thread = malloc(sizeof(pthread_t));
-	if (!thread)
-		return (false);
 	philos[i] = malloc(sizeof(t_philo));
 	if (!philos[i])
-		return (free(thread), false);
+		return (false);
 	philos[i]->full = false;
-	philos[i]->thread_id = thread;
 	philos[i]->id = i + 1;
 	philos[i]->meals_eaten = 0;
 	philos[i]->last_mealtime = 0;
@@ -112,27 +106,28 @@ bool	init_all_mutex(t_data *data)
 	int		i;
 
 	i = 0;
-	data->forks = malloc(sizeof(pthread_mutex_t *) * (data->nbr_of_philos));
-	if (!data->forks)
+	data->forks = malloc(sizeof(pthread_mutex_t) * (data->nbr_of_philos));
+	data->print_lock = malloc(sizeof(pthread_mutex_t));
+	if (!data->forks || !data->print_lock)
 		return (false);
-	// data->print_lock = malloc(sizeof(pthread_mutex_t));
-	pthread_mutex_init(data->print_lock, NULL);
+	if (pthread_mutex_init(data->print_lock, NULL) != 0)
+		return (false);
 	while (i < data->nbr_of_philos)
 	{
-		data->forks[i] = malloc(sizeof(pthread_mutex_t));
+		// data->forks[i] = malloc(sizeof(pthread_mutex_t));
 		data->philo_arr[i]->philo_lock = malloc(sizeof(pthread_mutex_t));
-		if (!data->forks[i] || !data->philo_arr[i]->philo_lock)
+		if (!data->philo_arr[i]->philo_lock)
 			return (false);
-		pthread_mutex_init(data->forks[i], NULL);
-		pthread_mutex_init(data->philo_arr[i]->philo_lock, NULL); //cjecl if succeed
-		// data->philo_arr[i]->left_fork = data->forks[i];
+		if (pthread_mutex_init(&data->forks[i], NULL) != 0 || \
+		pthread_mutex_init(data->philo_arr[i]->philo_lock, NULL) != 0)
+			return (false);
 		i++;
 	}
 	assign_forks(data);
 	return (true);
 }
 
-//last philo switches left and right to avoid potential deadlock
+
 static void	assign_forks(t_data *data)
 {
 	int				i;
@@ -144,16 +139,16 @@ static void	assign_forks(t_data *data)
 	{
 		if (i % 2 == 1)
 		{
-			philos[i]->right_fork = data->forks[i - 1];
-			philos[i]->left_fork = data->forks[i];
+			philos[i]->right_fork = &data->forks[i - 1];
+			philos[i]->left_fork = &data->forks[i];
 		}
 		else
 		{
-			philos[i]->right_fork = data->forks[i];
-			philos[i]->left_fork = data->forks[i - 1];
+			philos[i]->right_fork = &data->forks[i];
+			philos[i]->left_fork = &data->forks[i - 1];
 		}
 		i++;
 	}
-	philos[0]->right_fork = data->forks[0];
-	philos[0]->left_fork = data->forks[i - 1];
+	philos[0]->right_fork = &data->forks[0];
+	philos[0]->left_fork = &data->forks[i - 1];
 }

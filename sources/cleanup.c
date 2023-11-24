@@ -23,10 +23,14 @@ void	cleanup_threads_and_end(t_data *data, bool full, int nbr)
 	if (nbr < data->nbr_of_philos)
 		pthread_mutex_unlock(data->print_lock);
 	if (full)
-		kill_everyone(data);
+	{
+		pthread_mutex_lock(data->print_lock);
+		data->all_alive = false;
+		pthread_mutex_unlock(data->print_lock);
+	}
 	while (i < nbr)
 	{
-		pthread_join(*data->philo_arr[i]->thread_id, NULL);
+		pthread_join(data->philo_arr[i]->thread_id, NULL);
 		i++;
 	}
 	free_data(data);
@@ -49,11 +53,10 @@ static void	free_data(t_data *data)
 		pthread_mutex_destroy(philo->philo_lock);
 		if (philo->id % 2 == 1)
 			pthread_mutex_destroy(philo->left_fork);
+
 		else
 			pthread_mutex_destroy(philo->right_fork);
-		// free(philo->left_fork);
-		// free(philo->philo_lock);
-		// free(philo->thread_id);
+		free(philo->philo_lock);
 		free(philo);
 		i++;
 	}
