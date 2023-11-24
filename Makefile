@@ -14,9 +14,9 @@
 
 NAME 			:= philo
 CC				= gcc
-COMPIL_FLAGS	?= -Wall -Wextra -Werror
-#-g -fsanitize=address
+COMPIL_FLAGS	?= -Wall -Wextra -Werror -g -fsanitize=thread
 LINKFLAGS 		?= -I include
+#debug flags for easy copy paste-> -g -fsanitize=thread
 #sources and objects -------------
 
 SOURCEFILES	:=	main.c \

@@ -24,7 +24,7 @@ bool	monitor_philos(t_data *data)
 	{
 		while (i < data->nbr_of_philos)
 		{
-			if (!is_alive(data->philo_arr[i], true, &full_philos))
+			if (!is_alive(&data->philo_arr[i], true, &full_philos))
 				return (false);
 			i++;
 		}
@@ -41,8 +41,8 @@ bool	is_alive(t_philo *philo, bool in_monitor, int *full_philos)
 	bool	ret_val;
 
 	ret_val = true;
-	pthread_mutex_lock(philo->philo_lock);
-	if (time_since_x(philo->last_mealtime) > philo->data->time_till_death)
+	pthread_mutex_lock(&philo->philo_lock);
+	if (time_since_x(philo->last_mealtime) > philo->data->death_time)
 	{
 		ret_val = false;
 		pthread_mutex_lock(philo->data->print_lock);
@@ -60,6 +60,6 @@ bool	is_alive(t_philo *philo, bool in_monitor, int *full_philos)
 				philo->data->meals_needed != -1)
 			*full_philos = *full_philos + 1;
 	}
-	pthread_mutex_unlock(philo->philo_lock);
+	pthread_mutex_unlock(&philo->philo_lock);
 	return (ret_val);
 }

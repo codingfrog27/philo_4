@@ -30,18 +30,19 @@
 
 # define MALLOC_ERROR "ERROR occured when allocating memory\n"
 
+typedef void			*(*t_routine_func)(void*);
 typedef struct s_data	t_data;
 
 typedef struct s_philo
 {
 	bool			full;
 	int				id;
-	int				meals_eaten;
+	long			meals_eaten;
 	long			last_mealtime;
 	long			start_time;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	*philo_lock;
+	pthread_mutex_t	philo_lock;
 	pthread_t		thread_id;
 	t_data			*data;
 	bool			social_eating;
@@ -49,26 +50,24 @@ typedef struct s_philo
 
 typedef enum e_msg_types
 {
-	death,
 	thinking,
 	grabbing_fork,
 	eating,
 	sleeping,
 }	t_msg_types;
 
-//also using mealcheck to see if philo is alive + as start lock?
 struct s_data
 {
 	long			nbr_of_philos;
-	long			time_till_death;
-	long			time_to_eat;
+	long			death_time;
+	long			eat_time;
 	long			sleep_time;
 	long			meals_needed;
 	long			full_philos;
 	long			start_time;
 	pthread_mutex_t	*print_lock;
 	pthread_mutex_t	*forks;
-	t_philo			**philo_arr;
+	t_philo			*philo_arr;
 	bool			all_alive;
 };
 
@@ -82,9 +81,11 @@ void	*philo_routine(void *para);
 bool	philo_print(t_philo *philo, t_msg_types msg_type);
 bool	monitor_philos(t_data *data);
 bool	is_alive(t_philo *philo, bool in_monitor, int *full_philos);
+void	politely_waiting(t_philo *philo);
+
 //cleanup
 void	cleanup_threads_and_end(t_data *data, bool full, int nbr);
-void	kill_everyone(t_data *data);
+bool	error_cleanup(t_data *data);
 
 //time
 long	time_since_x(long start);

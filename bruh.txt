@@ -1,0 +1,13 @@
+0 1 is thinking
+0 2 is thinking
+0 3 is thinking
+325 2 has taken a fork
+325 2 has taken a fork
+325 2 is eating
+375 1 has taken a fork
+525 2 is sleeping
+525 3 has taken a fork
+525 1 has taken a fork
+525 1 is eating
+625 2 is thinking
+651 3 died
